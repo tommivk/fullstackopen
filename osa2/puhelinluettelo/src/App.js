@@ -46,15 +46,10 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Filter newFilter = {newFilter} handleFilterChange={handleFilterChange}/>
-      <form onSubmit = {addPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} /> <br />
-          number: <input value = {newNumber} onChange={handleNumberChange}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm onSubmit = {addPerson} newName={newName} newNumber = {newNumber} 
+      handleNameChange = {handleNameChange} 
+      handleNumberChange = {handleNumberChange}/>
+     
       <h2>Numbers</h2>
       <Numbers persons = {persons} filter = {newFilter}/>
       
@@ -62,6 +57,19 @@ const App = () => {
   )
   }
 
+const PersonForm = (props) => {
+    return(
+        <form onSubmit = {props.onSubmit}>
+        <div>
+          name: <input value={props.newName} onChange={props.handleNameChange} /> <br />
+          number: <input value = {props.newNumber} onChange={props.handleNumberChange}/>
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+    )
+  }
 
 const Filter = (props) => {
     
