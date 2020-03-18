@@ -20,13 +20,13 @@ const App = ()=>{
     return(
         <div>
             <FilterForm onChange = {handleFilterChange}/>
-            <Filter filterValue = {filter} countries = {countries}/>
+            <Filter setFilter = {setFilter} filterValue = {filter} countries = {countries}/>
    
         </div>
     )
 }
 
-const Filter = ({filterValue, countries}) => {
+const Filter = ({filterValue, countries, setFilter}) => {
     let filtered = countries
     if(filterValue){
     filtered = countries.filter((x)=>x.name.toLowerCase().includes(filterValue.toLowerCase()))
@@ -54,14 +54,14 @@ const Filter = ({filterValue, countries}) => {
         return(
             <div>
                 {countries.filter((x)=>x.name.toLowerCase().includes(filterValue.toLowerCase())).map(
-                    (c)=> <ShowNames key = {c.name} name = {c.name}/>
+                    (c)=> <ShowNames setFilter = {setFilter} key = {c.name} name = {c.name}/>
                 )}
             </div>
         )
     }
     return(
         <div>
-        {countries.map((c)=> <ShowNames key = {c.name}name = {c.name}/>)}
+        {countries.map((c)=> <ShowNames setFilter = {setFilter} key = {c.name}name = {c.name}/>)}
         </div>
     )
 
@@ -85,10 +85,13 @@ const ShowNames = (props) => {
 
     return(
         <div>
-            {props.name}
+            {props.name} <button onClick = {()=> props.setFilter(props.name)}>show</button> 
         </div>
     )
 }
+
+
+
 
 const ShowSingleCountry = ({country}) => {
     
