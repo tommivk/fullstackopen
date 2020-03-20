@@ -17,9 +17,31 @@ const App = () => {
   const addPerson = (event) => {
 
     event.preventDefault()
- 
-    if(persons.some(person => person.name.toLowerCase() === newName.toLowerCase())){
-        alert(`${newName} is already added to phonebook`)
+  
+    if(persons.find(person => person.name.toLowerCase() === newName.toLowerCase())){
+        const p = persons.find(person => person.name.toLowerCase() === newName.toLowerCase())
+        if(p.number === ""){
+          const updatedPerson = {
+            ...p,
+            number: newNumber
+           }
+           
+          updateNumber(p.id, updatedPerson)
+          setNewNumber('')
+          setNewName('')
+        }
+
+        else if(window.confirm(`${newName} is already added to phonebook, replace the old number with new one? `)){
+          
+          const updatedPerson = {
+            ...p,
+            number: newNumber
+           }
+           
+          updateNumber(p.id, updatedPerson)
+          setNewNumber('')
+          setNewName('')
+        }
     }else{
 
     const newNameObject = {
@@ -44,6 +66,16 @@ const App = () => {
       }
     )
   }
+}
+
+const updateNumber = (id, updatedObject) => {
+    personService.update(id, updatedObject).then(response => {
+      
+     const filtered = persons.filter((x)=> x.id !== id)
+     
+     setPersons(filtered.concat(updatedObject).sort((a,b)=>(a.id>b.id)? 1 : (a.id<b.id)? -1 : 0))
+     console.log(updatedObject)
+    })
 }
 
 
