@@ -10,7 +10,7 @@ const App = () => {
   useEffect(()=>{    
       personService.getAll().then(response=>{
       setPersons(response)
-      console.log(response)
+    
     })
   },[])
 
@@ -35,6 +35,18 @@ const App = () => {
     }
   }
 
+  const deletePerson = person => {
+     
+      if(window.confirm(`Delete ${person.name} ?`)){
+      personService.destroy(person.id).then(response => {
+      const p = persons.filter(x => x.id !== person.id)
+      setPersons(p)
+      }
+    )
+  }
+}
+
+
   const handleNumberChange = (event) => {
      setNewNumber(event.target.value)
   }
@@ -55,7 +67,7 @@ const App = () => {
       handleNumberChange = {handleNumberChange}/>
      
       <h2>Numbers</h2>
-      <Numbers persons = {persons} filter = {newFilter}/>
+      <Numbers persons = {persons} filter = {newFilter} deletePerson = {deletePerson}/>
       
     </div>
   )
@@ -90,12 +102,13 @@ const Filter = (props) => {
     )
 }
 
-const Numbers = ({persons, filter}) => {
-   
+const Numbers = ({persons, filter, deletePerson}) => {
+    
     if(filter===""){
     return(
         <div>
-            {persons.map((p)=><Person key = {p.name} name = {p.name} number = {p.number} />)}
+            
+            {persons.map((p)=><Person key = {p.name} name = {p.name} number = {p.number} remove = {()=> deletePerson(p)}/>)}
         </div>
     )
     }else{
@@ -103,16 +116,16 @@ const Numbers = ({persons, filter}) => {
             <div>
                {persons.filter((x)=>x.name.toLowerCase()
                .includes(filter.toLowerCase())).map((m) => 
-               <Person key = {m.name} name = {m.name} number = {m.number}/>)}
+               <Person key = {m.name} name = {m.name} number = {m.number} remove = {()=> deletePerson(m)}/>)}
             </div>
         )
     }
 } 
-const Person = ({name, number}) => {
-
+const Person = ({name, number, remove}) => {
+   
     return(
         <div>
-            <p>{name} {number}</p>
+            <p>{name} {number} <button onClick = {remove}>delete</button></p>
         </div>
     )
 }
