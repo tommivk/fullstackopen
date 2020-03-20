@@ -19,9 +19,19 @@ code {
   list-style: none;
 }
 
-.error {
+.message {
   color: rgb(7, 20, 22);
   background: rgb(128, 221, 167);
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.error {
+  color: rgb(0, 0, 0);
+  background: rgb(204, 11, 11);
   font-size: 20px;
   border-style: solid;
   border-radius: 5px;

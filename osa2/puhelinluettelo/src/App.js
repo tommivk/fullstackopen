@@ -7,6 +7,7 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ newFilter, setNewFilter ] = useState('')
+  const [ message, setMessage ] = useState(null)
   const [ errorMessage, setErrorMessage ] = useState(null)
 
   useEffect(()=>{    
@@ -34,13 +35,13 @@ const App = () => {
           setNewName('')
         }
 
-        else if(window.confirm(`${newName} is already added to phonebook, replace the old number with new one? `)){
+        else if(window.confirm(`${p.name} is already added to phonebook, replace the old number with new one? `)){
           
           const updatedPerson = {
             ...p,
             number: newNumber
            }
-           showMessage(`Number updated for ${p.name}`)
+           
           updateNumber(p.id, updatedPerson)
           setNewNumber('')
           setNewName('')
@@ -62,9 +63,9 @@ const App = () => {
   }
   
   const showMessage = (message, time) => {
-    setErrorMessage(message)
+    setMessage(message)
            setTimeout(() => {
-             setErrorMessage(null)
+             setMessage(null)
            }, 5000)
   }
   const deletePerson = person => {
@@ -85,8 +86,12 @@ const updateNumber = (id, updatedObject) => {
      const filtered = persons.filter((x)=> x.id !== id)
      
      setPersons(filtered.concat(updatedObject).sort((a,b)=>(a.id>b.id)? 1 : (a.id<b.id)? -1 : 0))
-     console.log(updatedObject)
-    })
+     
+     showMessage(`Number updated for ${updatedObject.name}`)
+    }).catch(error => {
+      setErrorMessage(`Information ${updatedObject.name} has already been deleted from server`)
+      setTimeout(()=> setErrorMessage(null), 5000)
+  })
 }
 
 
@@ -103,7 +108,8 @@ const updateNumber = (id, updatedObject) => {
 
   return (
     <div>
-      <Notification message = {errorMessage}/>
+      <Error message = {errorMessage}/>
+      <Notification message = {message}/>
       <h2>Phonebook</h2>
       <Filter newFilter = {newFilter} handleFilterChange={handleFilterChange}/>
       <PersonForm onSubmit = {addPerson} newName={newName} newNumber = {newNumber} 
@@ -118,6 +124,18 @@ const updateNumber = (id, updatedObject) => {
   }
 
 const Notification = ({message}) => {
+
+  if(message===null){
+    return null
+  }
+  return(
+    <div className="message">
+      {message}
+    </div>
+  )
+
+}
+const Error = ({message}) => {
 
   if(message===null){
     return null
