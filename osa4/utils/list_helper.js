@@ -30,7 +30,7 @@ const mostBlogs = (blogs) => {
             person = name
         }
     }
-    
+
     return(
         {
             author: person,
@@ -39,6 +39,43 @@ const mostBlogs = (blogs) => {
     )
 }
 
+const mostLikes = (blogs) => {
+    let allNames = blogs.map((x) => x.author)
+    let names = [...new Set(allNames)]
+
+    let count = {}
+    let most = 0
+    let person
+  
+
+    for(let i = 0; i<names.length; i++){
+
+        for(let k = 0; k<blogs.length; k++){
+            let name = names[i]
+            if(count[name]===undefined && blogs[k].author===name){
+                 count[name] = blogs[k].likes
+                }else if(blogs[k].author===name){
+                    count[name] = count[name] + blogs[k].likes
+                }
+            if(count[name]>most) {
+                most = count[name]
+                person = name
+            }
+                
+
+        }
+
+    }
+    return(
+        {
+            author: person,
+            likes: most
+        }
+    )
+
+}
+
+
 module.exports = {
-    dummy, totalLikes, favouriteBlog, mostBlogs
+    dummy, totalLikes, favouriteBlog, mostBlogs, mostLikes
 }

@@ -125,3 +125,18 @@ describe('most authored', () => {
     })
 
 })
+
+describe('author with most likes', () => {
+
+    test('author with most likes is right', () => {
+
+        const auth = {
+            author: "Edsger W. Dijkstra",
+            likes: 17
+        }
+        const result = listHelper.mostLikes(blogs)
+        expect(result).toEqual(auth)
+        
+    })
+
+})
