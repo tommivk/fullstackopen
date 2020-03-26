@@ -16,6 +16,14 @@ test('right amount of blogs are returned', async() => {
    
 })
 
+test('id is returned in the right form', async() => {
+
+    const response = await api.get('/api/blogs')
+  
+    response.body.forEach(blog=> expect(blog.id).toBeDefined())
+
+})
+
 afterAll(() => {
     mongoose.connection.close()
   })
