@@ -14,7 +14,11 @@ const Blog = require('../models/blog')
     if(!blog.likes){
       blog.likes = 0
     }
-  
+    
+    if(!blog.url && !blog.title){
+      return response.status(400).json('URL and title is required')
+    }
+
     const savedBlog = await blog.save()
     
     response.status(201).json(savedBlog.toJSON())

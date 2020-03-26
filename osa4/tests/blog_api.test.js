@@ -89,6 +89,19 @@ test('if likes is undefined it defaults to 0', async() => {
 
 })
 
+test('if title and url is missing response is 400', async() => {
+   
+    const newBlog = {
+        author: 'New Author',
+        likes: 44
+    }
+
+    await api.post('/api/blogs')
+          .send(newBlog)
+          .expect(400)
+})
+
+
 afterAll(() => {
     mongoose.connection.close()
   })
