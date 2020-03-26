@@ -20,6 +20,8 @@ const intialBlogs = [
     }
 ]
 
+describe('when there is initially some notes saved', () =>{
+
 beforeEach(async()=> {
     await Blog.deleteMany({})
     let blogObject = new Blog(intialBlogs[0])
@@ -28,6 +30,7 @@ beforeEach(async()=> {
     await blogObject.save()
 
 })
+
 
 test('get returns status 200', async() =>  {
 
@@ -99,6 +102,8 @@ test('if title and url is missing response is 400', async() => {
     await api.post('/api/blogs')
           .send(newBlog)
           .expect(400)
+})
+
 })
 
 
