@@ -17,10 +17,11 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true})
 
 app.use(cors())
 app.use(express.json())
-
+app.use(middleware.tokenExtractor)
 app.use('/api', blogsRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
 app.use(middleware.errorHandler)
+
 
 module.exports = app
