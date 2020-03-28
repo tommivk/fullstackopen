@@ -32,16 +32,9 @@ usersRouter.post('/', async (request, response, next) => {
         name: body.name,    
     })
 
-    try {
     const savedUser = await user.save()
     response.json(savedUser)
-    } catch (error) {
-        if(error.name==='MongoError' && error.code === 11000){
-            return response.status(400).send({ error: 'username aleady exists' })
-        }
-    }
     
-
 })
 
 usersRouter.get('/', async (request, response) => {
