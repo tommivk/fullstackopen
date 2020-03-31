@@ -14,7 +14,10 @@ const App = () => {
     try {
       const user = await loginService.login({ username, password })
 
+      window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user))
+
       setUser(user)
+
       setUsername("")
       setPassword("")
     } catch (exception) {
@@ -56,12 +59,26 @@ const App = () => {
       ))}
     </div>
   )
-
+  const logOut = () => {
+    window.localStorage.removeItem("loggedBlogAppUser")
+    setUser(null)
+  }
   const loggedIn = user => (
     <div>
-      <p>{user.name} logged in</p>
+      {user.name} logged in <button onClick={logOut}>logout</button>
+      <br />
+      <br />
     </div>
   )
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser")
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      //setToken
+    }
+  }, [])
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs))
