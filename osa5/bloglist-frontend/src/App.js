@@ -8,6 +8,7 @@ const App = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [user, setUser] = useState(null)
+  const [newBlog, setNewBlog] = useState({author: '', url: '', title: ''})
 
   const handleLogin = async event => {
     event.preventDefault()
@@ -15,7 +16,8 @@ const App = () => {
       const user = await loginService.login({ username, password })
 
       window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user))
-
+      blogService.setToken(user.token)
+      
       setUser(user)
 
       setUsername("")
@@ -23,6 +25,26 @@ const App = () => {
     } catch (exception) {
       console.log("error happened")
     }
+  }
+
+  const handleNewBLog = async event => {
+    event.preventDefault()
+   
+    try{
+    const newBlogObject = {
+      author: newBlog.author,
+      title: newBlog.title,
+      url: newBlog.url
+    }
+
+    await blogService.create(newBlogObject)
+    setBlogs(blogs.concat(newBlogObject))
+    setNewBlog({...newBlog, author: '', url: '', title: ''})
+    }catch(error){
+      console.log('adding new blog failed')
+    }
+    
+
   }
 
   const loginForm = () => (
@@ -59,6 +81,47 @@ const App = () => {
       ))}
     </div>
   )
+  const newBlogField = () => (
+   <div>
+    <h3>add new blog</h3>
+    <form onSubmit={handleNewBLog}>
+      <div>
+        title
+      <input
+         type ="text"
+         name = "title"
+         value = {newBlog.title}
+         onChange={({target}) => setNewBlog({...newBlog, title: target.value})}
+        />
+        </div>
+        <div>
+          author
+        <input
+         type ="text"
+         name = "Author"
+         value = {newBlog.author}
+         onChange={({target}) => setNewBlog({...newBlog, author: target.value})}
+        />
+        </div>
+        <div>
+          url
+        <input
+         type ="text"
+         name = "url"
+         value = {newBlog.url}
+         onChange={({target}) => setNewBlog({...newBlog, url: target.value})}
+        />
+        
+      </div>
+      <div>
+        <button type = "submit">Add new blog</button>
+      </div>
+    </form>
+    <br></br>
+    
+    </div>
+  )
+
   const logOut = () => {
     window.localStorage.removeItem("loggedBlogAppUser")
     setUser(null)
@@ -76,7 +139,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      //setToken
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -84,16 +147,25 @@ const App = () => {
     blogService.getAll().then(blogs => setBlogs(blogs))
   }, [])
 
-  return (
-    <div>
-      {user === null && <h2>log in to application</h2>}
-      {user !== null && <h2>blogs</h2>}
-
-      {user === null && loginForm()}
-      {user !== null && loggedIn(user)}
-      {user !== null && allBlogs()}
-    </div>
-  )
+  if(user===null){
+    return (
+      <div>
+        <h2>log in to application</h2>
+        {loginForm()}
+        
+      </div>
+    )
+  }
+    return (
+      <div>
+      <h2>blogs</h2>
+      {loggedIn(user)}
+      {newBlogField()}
+      {allBlogs()}
+      </div>
+    )
+  
+  
 }
 
 export default App
