@@ -43,11 +43,15 @@ const App = () => {
       const newBlogObject = {
         author: newBlog.author,
         title: newBlog.title,
-        url: newBlog.url
+        url: newBlog.url,
+        likes: 0
       }
 
       const response = await blogService.create(newBlogObject)
       newBlogObject.id = response.id
+
+      newBlogObject.user = { name: user.name }
+
       setBlogs(blogs.concat(newBlogObject))
       showMessage(
         `new blog ${newBlogObject.title} by ${newBlogObject.author} added!`
@@ -141,6 +145,7 @@ const App = () => {
       <Togglable buttonLabel="New Blog">
         <NewBlogField createNewBlog={createNewBLog} />
       </Togglable>
+      <br></br>
       {allBlogs()}
     </div>
   )
@@ -215,7 +220,6 @@ const NewBlogField = ({ createNewBlog }) => {
           <button type="submit">Add new blog</button>
         </div>
       </form>
-      <br></br>
     </div>
   )
 }
