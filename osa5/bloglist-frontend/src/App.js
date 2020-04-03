@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import Blog from "./components/Blog"
 import blogService from "./services/blogs"
 import loginService from "./services/login"
+import PropTypes from "prop-types"
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -275,6 +276,19 @@ const Togglable = props => {
       </div>
     </div>
   )
+}
+
+NewBlogField.propTypes = {
+  createNewBlog: PropTypes.func.isRequired
+}
+Togglable.propTypes = {
+  buttonLabel: PropTypes.string.isRequired
+}
+Notification.propTypes = {
+  message: PropTypes.string.isRequired
+}
+ErrorMessage.propTypes = {
+  message: PropTypes.string.isRequired
 }
 
 export default App

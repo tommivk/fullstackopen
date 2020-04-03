@@ -1,10 +1,13 @@
 import React, { useState } from "react"
 import blogService from "../services/blogs"
+import PropTypes from "prop-types"
+
 const Blog = ({ blog, setBlogs, blogs, user }) => {
   const [blogHidden, setBlogHidden] = useState(false)
 
   const toggleHidden = () => {
     setBlogHidden(!blogHidden)
+   
   }
 
   const addLike = async () => {
@@ -87,4 +90,8 @@ const Blog = ({ blog, setBlogs, blogs, user }) => {
   )
 }
 
+Blog.propTypes = {
+  setBlogs: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired
+}
 export default Blog
