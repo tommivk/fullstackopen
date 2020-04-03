@@ -1,42 +1,42 @@
-import React, { useState, useEffect } from "react"
-import Blog from "./components/Blog"
-import blogService from "./services/blogs"
-import loginService from "./services/login"
-import PropTypes from "prop-types"
+import React, { useState, useEffect } from 'react'
+import Blog from './components/Blog'
+import blogService from './services/blogs'
+import loginService from './services/login'
+import PropTypes from 'prop-types'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState("")
-  const [notification, setNotification] = useState("")
+  const [errorMessage, setErrorMessage] = useState('')
+  const [notification, setNotification] = useState('')
 
   const handleLogin = async event => {
     event.preventDefault()
     try {
       const user = await loginService.login({ username, password })
 
-      window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user))
+      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
       blogService.setToken(user.token)
 
       setUser(user)
 
-      setUsername("")
-      setPassword("")
+      setUsername('')
+      setPassword('')
       showMessage(`logged in as ${user.username}`)
     } catch (exception) {
-      showError("Wrong username or password")
+      showError('Wrong username or password')
     }
   }
 
   const showMessage = message => {
     setNotification(message)
-    setTimeout(() => setNotification(""), 6000)
+    setTimeout(() => setNotification(''), 6000)
   }
   const showError = message => {
     setErrorMessage(message)
-    setTimeout(() => setErrorMessage(""), 6000)
+    setTimeout(() => setErrorMessage(''), 6000)
   }
 
   const createNewBLog = async newBlog => {
@@ -62,7 +62,7 @@ const App = () => {
         `new blog ${newBlogObject.title} by ${newBlogObject.author} added!`
       )
     } catch (error) {
-      showError("adding new blog failed")
+      showError('adding new blog failed')
     }
   }
 
@@ -93,6 +93,8 @@ const App = () => {
     </form>
   )
 
+
+
   const allBlogs = () => {
     const sortedBlogs = blogs.sort((a, b) => (a.likes < b.likes ? 1 : -1))
     return (
@@ -112,11 +114,11 @@ const App = () => {
 
   const logOut = () => {
     try {
-      window.localStorage.removeItem("loggedBlogAppUser")
+      window.localStorage.removeItem('loggedBlogAppUser')
       setUser(null)
-      showMessage("logged out successfully")
-    } catch {
-      showError("Something went wrong")
+      showMessage('logged out successfully')
+    } catch(error) {
+      showError('Something went wrong')
     }
   }
   const loggedIn = user => (
@@ -128,7 +130,7 @@ const App = () => {
   )
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser")
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
@@ -167,9 +169,9 @@ const App = () => {
 
 const ErrorMessage = ({ message }) => {
   const errorStyle = {
-    padding: "10px",
-    border: "solid red 2px",
-    color: "red",
+    padding: '10px',
+    border: 'solid red 2px',
+    color: 'red',
     fontSize: 16
   }
 
@@ -183,14 +185,14 @@ const ErrorMessage = ({ message }) => {
   return <></>
 }
 const NewBlogField = ({ createNewBlog }) => {
-  const [newBlog, setNewBlog] = useState({ author: "", url: "", title: "" })
+  const [newBlog, setNewBlog] = useState({ author: '', url: '', title: '' })
 
   const handleNewBLog = event => {
     event.preventDefault()
 
     createNewBlog(newBlog)
 
-    setNewBlog({ ...newBlog, author: "", url: "", title: "" })
+    setNewBlog({ ...newBlog, author: '', url: '', title: '' })
   }
 
   return (
@@ -239,9 +241,9 @@ const NewBlogField = ({ createNewBlog }) => {
 }
 const Notification = ({ message }) => {
   const notificationStyle = {
-    padding: "10px",
-    border: "solid green 2px",
-    color: "green",
+    padding: '10px',
+    border: 'solid green 2px',
+    color: 'green',
     fontSize: 16
   }
 
@@ -258,8 +260,8 @@ const Notification = ({ message }) => {
 const Togglable = props => {
   const [visible, setVisible] = useState(false)
 
-  const hideWhenVisible = { display: visible ? "none" : "" }
-  const showWhenVisible = { display: visible ? "" : "none" }
+  const hideWhenVisible = { display: visible ? 'none' : '' }
+  const showWhenVisible = { display: visible ? '' : 'none' }
 
   const toggleVisibility = () => {
     setVisible(!visible)
