@@ -8,7 +8,6 @@ const App = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [user, setUser] = useState(null)
-  const [newBlog, setNewBlog] = useState({ author: "", url: "", title: "" })
   const [errorMessage, setErrorMessage] = useState("")
   const [notification, setNotification] = useState("")
 
@@ -39,9 +38,7 @@ const App = () => {
     setTimeout(() => setErrorMessage(""), 6000)
   }
 
-  const handleNewBLog = async event => {
-    event.preventDefault()
-
+  const createNewBLog = async newBlog => {
     try {
       const newBlogObject = {
         author: newBlog.author,
@@ -52,7 +49,6 @@ const App = () => {
       const response = await blogService.create(newBlogObject)
       newBlogObject.id = response.id
       setBlogs(blogs.concat(newBlogObject))
-      setNewBlog({ ...newBlog, author: "", url: "", title: "" })
       showMessage(
         `new blog ${newBlogObject.title} by ${newBlogObject.author} added!`
       )
@@ -93,50 +89,6 @@ const App = () => {
       {blogs.map(blog => (
         <Blog key={blog.id} blog={blog} />
       ))}
-    </div>
-  )
-  const newBlogField = () => (
-    <div>
-      <h3>add new blog</h3>
-      <form onSubmit={handleNewBLog}>
-        <div>
-          title
-          <input
-            type="text"
-            name="title"
-            value={newBlog.title}
-            onChange={({ target }) =>
-              setNewBlog({ ...newBlog, title: target.value })
-            }
-          />
-        </div>
-        <div>
-          author
-          <input
-            type="text"
-            name="Author"
-            value={newBlog.author}
-            onChange={({ target }) =>
-              setNewBlog({ ...newBlog, author: target.value })
-            }
-          />
-        </div>
-        <div>
-          url
-          <input
-            type="text"
-            name="url"
-            value={newBlog.url}
-            onChange={({ target }) =>
-              setNewBlog({ ...newBlog, url: target.value })
-            }
-          />
-        </div>
-        <div>
-          <button type="submit">Add new blog</button>
-        </div>
-      </form>
-      <br></br>
     </div>
   )
 
@@ -186,7 +138,9 @@ const App = () => {
       <Notification message={notification} />
       <h2>blogs</h2>
       {loggedIn(user)}
-      {newBlogField()}
+      <Togglable buttonLabel="New Blog">
+        <NewBlogField createNewBlog={createNewBLog} />
+      </Togglable>
       {allBlogs()}
     </div>
   )
@@ -209,6 +163,62 @@ const ErrorMessage = ({ message }) => {
   }
   return <></>
 }
+const NewBlogField = ({ createNewBlog }) => {
+  const [newBlog, setNewBlog] = useState({ author: "", url: "", title: "" })
+
+  const handleNewBLog = event => {
+    event.preventDefault()
+
+    createNewBlog(newBlog)
+
+    setNewBlog({ ...newBlog, author: "", url: "", title: "" })
+  }
+
+  return (
+    <div>
+      <h3>add new blog</h3>
+      <form onSubmit={handleNewBLog}>
+        <div>
+          title
+          <input
+            type="text"
+            name="title"
+            value={newBlog.title}
+            onChange={({ target }) =>
+              setNewBlog({ ...newBlog, title: target.value })
+            }
+          />
+        </div>
+        <div>
+          author
+          <input
+            type="text"
+            name="Author"
+            value={newBlog.author}
+            onChange={({ target }) =>
+              setNewBlog({ ...newBlog, author: target.value })
+            }
+          />
+        </div>
+        <div>
+          url
+          <input
+            type="text"
+            name="url"
+            value={newBlog.url}
+            onChange={({ target }) =>
+              setNewBlog({ ...newBlog, url: target.value })
+            }
+          />
+        </div>
+        <div>
+          <button type="submit">Add new blog</button>
+        </div>
+      </form>
+      <br></br>
+    </div>
+  )
+}
 const Notification = ({ message }) => {
   const notificationStyle = {
     padding: "10px",
@@ -225,6 +235,29 @@ const Notification = ({ message }) => {
     )
   }
   return <></>
+}
+
+const Togglable = props => {
+  const [visible, setVisible] = useState(false)
+
+  const hideWhenVisible = { display: visible ? "none" : "" }
+  const showWhenVisible = { display: visible ? "" : "none" }
+
+  const toggleVisibility = () => {
+    setVisible(!visible)
+  }
+
+  return (
+    <div>
+      <div style={hideWhenVisible}>
+        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
+      </div>
+      <div style={showWhenVisible}>
+        {props.children}
+        <button onClick={toggleVisibility}>Hide Form</button>
+      </div>
+    </div>
+  )
 }
 
 export default App
