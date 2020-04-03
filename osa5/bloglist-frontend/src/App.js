@@ -50,7 +50,11 @@ const App = () => {
       const response = await blogService.create(newBlogObject)
       newBlogObject.id = response.id
 
-      newBlogObject.user = { name: user.name }
+      newBlogObject.user = {
+        name: user.name,
+        id: user.id,
+        username: user.username
+      }
 
       setBlogs(blogs.concat(newBlogObject))
       showMessage(
@@ -88,13 +92,22 @@ const App = () => {
     </form>
   )
 
-  const allBlogs = () => (
-    <div>
-      {blogs.map(blog => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
-    </div>
-  )
+  const allBlogs = () => {
+    const sortedBlogs = blogs.sort((a, b) => (a.likes < b.likes ? 1 : -1))
+    return (
+      <div>
+        {sortedBlogs.map(blog => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            blogs={blogs}
+            setBlogs={setBlogs}
+            user={user}
+          />
+        ))}
+      </div>
+    )
+  }
 
   const logOut = () => {
     try {
