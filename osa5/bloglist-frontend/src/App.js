@@ -72,6 +72,7 @@ const App = () => {
       <div>
         Username
         <input
+          id='usernameField'
           type='text'
           value={username}
           name='Username'
@@ -81,6 +82,7 @@ const App = () => {
       <div>
         Password
         <input
+          id='passwordField'
           type='password'
           value={password}
           name='Password'
@@ -89,7 +91,9 @@ const App = () => {
         />
       </div>
       <div>
-        <button type='submit'>Login</button>
+        <button id='login-button' type='submit'>
+          Login
+        </button>
       </div>
     </form>
   )
@@ -101,9 +105,9 @@ const App = () => {
       url: blog.url,
       likes: blog.likes + 1,
       user: {
-        id: user.id,
-        name: user.name,
-        username: user.username,
+        id: blog.user.id,
+        name: blog.user.name,
+        username: blog.user.username,
       },
     }
 
@@ -113,7 +117,7 @@ const App = () => {
       response.user = {
         id: response.user,
         name: blog.user.name,
-        username: blog.user.name,
+        username: blog.user.username,
       }
       const filterBlog = blogs.filter((x) => x.id !== response.id)
       const allBlogs = filterBlog.concat(response)
@@ -133,6 +137,7 @@ const App = () => {
         await blogService.remove(blog.id)
         const filteredBlogs = blogs.filter((x) => x.id !== blog.id)
         setBlogs(filteredBlogs)
+        showMessage(`${blog.title} by ${blog.author} removed`)
       } catch (error) {
         console.log('failed to remove blog')
       }
@@ -142,7 +147,7 @@ const App = () => {
   const allBlogs = () => {
     const sortedBlogs = blogs.sort((a, b) => (a.likes < b.likes ? 1 : -1))
     return (
-      <div>
+      <div className='allBlogs'>
         {sortedBlogs.map((blog) => (
           <Blog
             key={blog.id}
@@ -208,7 +213,7 @@ const App = () => {
         <NewBlogField createNewBlog={createNewBLog} />
       </Togglable>
       <br></br>
-      {allBlogs()}
+      <div id='render-blogs'>{allBlogs()}</div>
     </div>
   )
 }
@@ -216,14 +221,14 @@ const App = () => {
 const ErrorMessage = ({ message }) => {
   const errorStyle = {
     padding: '10px',
-    border: 'solid red 2px',
-    color: 'red',
+    border: 'solid rgb(255, 0, 0) 2px',
+    color: 'rgb(255, 0, 0)',
     fontSize: 16,
   }
 
   if (message) {
     return (
-      <div style={errorStyle}>
+      <div className='error' style={errorStyle}>
         <p>{message}</p>
       </div>
     )
@@ -262,7 +267,9 @@ const Togglable = (props) => {
   return (
     <div>
       <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
+        <button id='open' onClick={toggleVisibility}>
+          {props.buttonLabel}
+        </button>
       </div>
       <div style={showWhenVisible}>
         {props.children}

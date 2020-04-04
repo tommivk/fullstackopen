@@ -53,7 +53,7 @@ const NewBlogField = ({ createNewBlog }) => {
           />
         </div>
         <div>
-          <button type='submit'>Add new blog</button>
+          <button id= 'add-blog-button'type='submit'>Add new blog</button>
         </div>
       </form>
     </div>

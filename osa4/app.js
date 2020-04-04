@@ -10,6 +10,7 @@ const usersRouter = require("./controllers/users")
 const loginRouter = require("./controllers/login")
 const middleware = require("./utils/middleware")
 
+
 mongoose.set("useCreateIndex", true)
 
 const mongoUrl = config.MONGODB_URI
@@ -22,6 +23,13 @@ app.use(middleware.tokenExtractor)
 app.use("/api", blogsRouter)
 app.use("/api/users", usersRouter)
 app.use("/api/login", loginRouter)
+
+console.log(process.env.NODE_ENV)
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testing')
+  app.use('/api/testing', testingRouter)
+}
+
 app.use(middleware.errorHandler)
 
 module.exports = app

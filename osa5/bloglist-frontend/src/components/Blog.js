@@ -24,7 +24,9 @@ const Blog = ({ blog, user, handleNewLike, handleBlogRemove }) => {
       <div>
         <div style={closeWhenHidden}>
           {blog.title} {blog.author}{' '}
-          <button onClick={() => toggleHidden()}>show</button>
+          <button id='show-blog-button' onClick={() => toggleHidden()}>
+            show
+          </button>
         </div>
       </div>
     )
@@ -36,11 +38,19 @@ const Blog = ({ blog, user, handleNewLike, handleBlogRemove }) => {
         <br />
         {blog.author} <br />
         {blog.url} <br />
-        likes {blog.likes}{' '}
-        <button onClick={() => handleNewLike(blog)}>like</button> <br />
+        <div id='blogLikes'>likes {blog.likes} </div>
+        <button id='add-like-button' onClick={() => handleNewLike(blog)}>
+          like
+        </button>{' '}
+        <br />
         added by: {blog.user.name} <br />
         <div style={showRemoveButton}>
-          <button onClick={() => handleBlogRemove(blog)}>Remove</button>
+          <button
+            id='remove-blog-button'
+            onClick={() => handleBlogRemove(blog)}
+          >
+            Remove
+          </button>
         </div>
       </div>
     </div>
