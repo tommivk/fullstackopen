@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { changeNotification } from '../reducers/notificationReducer'
 
 const AnecdoteList = (props) => {
-  console.log(props.anecdotes)
   const anecdotes = () => {
     if (!props.filter) {
       return props.anecdotes
