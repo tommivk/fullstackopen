@@ -16,12 +16,10 @@ const AnecdoteList = () => {
   const dispatch = useDispatch()
 
   const vote = (id) => {
+    
     console.log('vote', id)
-    dispatch(addVote(id))
-
     const anecdote = anecdotes.filter((x) => x.id === id)
-    console.log(anecdote[0])
-
+    dispatch(addVote(anecdote[0]))
     dispatch(changeNotification(`you voted '${anecdote[0].content}'`))
     setTimeout(() => nullMessage(), 5000)
   }
