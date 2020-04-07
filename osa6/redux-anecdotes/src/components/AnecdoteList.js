@@ -16,16 +16,10 @@ const AnecdoteList = () => {
   const dispatch = useDispatch()
 
   const vote = (id) => {
-    
     console.log('vote', id)
     const anecdote = anecdotes.filter((x) => x.id === id)
     dispatch(addVote(anecdote[0]))
-    dispatch(changeNotification(`you voted '${anecdote[0].content}'`))
-    setTimeout(() => nullMessage(), 5000)
-  }
-
-  const nullMessage = () => {
-    dispatch(changeNotification('NULL'))
+    dispatch(changeNotification(`you voted '${anecdote[0].content}'`, 5))
   }
 
   return anecdotes.map((anecdote) => (
