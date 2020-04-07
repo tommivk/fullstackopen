@@ -8,17 +8,24 @@ const notificationReducer = (state = 'NULL', action) => {
 }
 
 export const changeNotification = (message, time) => {
+  let timeoutId
   return async (dispatch) => {
     await dispatch({
       type: 'NEWMESSAGE',
       data: message,
     })
-    setTimeout(() => {
-      dispatch({
-        type: 'NEWMESSAGE',
-        data: 'NULL',
-      })
-    }, time * 1000)
+
+    function clearMessage() {
+      timeoutId = setTimeout(() => {
+        dispatch({
+          type: 'NEWMESSAGE',
+          data: 'NULL',
+        })
+      }, time * 1000)
+    }
+
+    clearMessage()
+    clearTimeout(timeoutId - 1)
   }
 }
 
