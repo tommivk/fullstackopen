@@ -1,16 +1,21 @@
-import React from 'react'
+import React, { useReducer } from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
-import { createStore, combineReducers } from 'redux'
+import { createStore, combineReducers, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
+import thunk from 'redux-thunk'
 import errorMessageReducer from './reducers/errorMessageReducer'
 import notificationReducer from './reducers/notificationReducer'
+import blogReducer from './reducers/blogReducer'
+import userReducer from './reducers/userReducer'
 
 const reducer = combineReducers({
     errorMessage: errorMessageReducer,
-    notification: notificationReducer
+    notification: notificationReducer,
+    blogs: blogReducer,
+    user: userReducer
 })
-const store = createStore(reducer)
+const store = createStore(reducer, applyMiddleware(thunk))
 
 console.log(store.getState())
 

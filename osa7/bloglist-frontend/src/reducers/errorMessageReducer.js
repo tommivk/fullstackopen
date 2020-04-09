@@ -1,7 +1,7 @@
 const errorMessageReducer = (state = '', action) => {
   switch (action.type) {
     case 'NEWERROR':
-      return action.data
+      return action.message
 
     case 'CLEARERROR':
       return ''
@@ -10,11 +10,23 @@ const errorMessageReducer = (state = '', action) => {
       return state
   }
 }
-
+let timeoutId
 export const newErrorMessage = (message) => {
-  return {
-    type: 'NEWERROR',
-    data: message,
+  return async (dispatch) => {
+    dispatch({
+      type: 'NEWERROR',
+      message,
+    })
+
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+
+    timeoutId = setTimeout(() => {
+      dispatch({
+        type: 'CLEARERROR',
+      })
+    }, 5000)
   }
 }
 

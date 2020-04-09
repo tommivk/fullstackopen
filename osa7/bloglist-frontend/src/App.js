@@ -7,17 +7,26 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import PropTypes from 'prop-types'
 import NewBlogField from './components/NewBlogField'
+import {
+  initializeBlogs,
+  setAllBlogs,
+  createBlog,
+} from './reducers/blogReducer'
+import { setActiveUser } from './reducers/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
-  const [blogs, setBlogs] = useState([])
+
+  useEffect(() => {
+    dispatch(initializeBlogs())
+  }, [dispatch])
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
-  // const [errorMessage, setErrorMessage] = useState('')
-  const errorMessage = useSelector(state => state.errorMessage)
-  const notification = useSelector(state => state.notification)
-  // const [notification, setNotification] = useState('')
+  const blogs = useSelector((state) => state.blogs)
+  const errorMessage = useSelector((state) => state.errorMessage)
+  const notification = useSelector((state) => state.notification)
+  const user = useSelector((state) => state.user)
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -27,54 +36,38 @@ const App = () => {
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
       blogService.setToken(user.token)
 
-      setUser(user)
+      dispatch(setActiveUser(user))
 
       setUsername('')
       setPassword('')
-      // showMessage(`logged in as ${user.username}`)
+
       dispatch(newNotification(`logged in as ${user.username}`))
     } catch (exception) {
-      // showError('Wrong username or password')
       dispatch(newErrorMessage('Wrong username or password'))
     }
   }
 
-  // const showMessage = (message) => {
-  //   setNotification(message)
-  //   setTimeout(() => setNotification(''), 6000)
-  // }
-  const showError = (message) => {
-    // setErrorMessage(message)
-    // setTimeout(() => setErrorMessage(''), 6000)
-  }
-
   const createNewBLog = async (newBlog) => {
+    const newBlogObject = {
+      author: newBlog.author,
+      title: newBlog.title,
+      url: newBlog.url,
+      likes: 0,
+    }
+    const activeUser = user
+    
+   
     try {
-      const newBlogObject = {
-        author: newBlog.author,
-        title: newBlog.title,
-        url: newBlog.url,
-        likes: 0,
-      }
-
-      const response = await blogService.create(newBlogObject)
-      newBlogObject.id = response.id
-
-      newBlogObject.user = {
-        name: user.name,
-        id: user.id,
-        username: user.username,
-      }
-
-      setBlogs(blogs.concat(newBlogObject))
-      // showMessage(
-      //   `new blog ${newBlogObject.title} by ${newBlogObject.author} added!`
-      // )
-      dispatch(newNotification(`new blog ${newBlogObject.title} by ${newBlogObject.author} added!`))
+      dispatch(createBlog(newBlogObject, activeUser))
+      dispatch(
+        newNotification(
+          `new blog ${newBlogObject.title} by ${newBlogObject.author} added!`
+        )
+      )
     } catch (error) {
-      // showError('adding new blog failed')
       dispatch(newErrorMessage('adding new blog failed'))
     }
+
   }
 
   const loginForm = () => (
@@ -131,7 +124,9 @@ const App = () => {
       }
       const filterBlog = blogs.filter((x) => x.id !== response.id)
       const allBlogs = filterBlog.concat(response)
-      setBlogs(allBlogs.sort((a, b) => (a.likes < b.likes ? 1 : -1)))
+      dispatch(
+        setAllBlogs(allBlogs.sort((a, b) => (a.likes < b.likes ? 1 : -1)))
+      )
     } catch (error) {
       console.log('like failed')
     }
@@ -146,9 +141,8 @@ const App = () => {
       try {
         await blogService.remove(blog.id)
         const filteredBlogs = blogs.filter((x) => x.id !== blog.id)
-        setBlogs(filteredBlogs)
+        dispatch(setAllBlogs(filteredBlogs))
         dispatch(newNotification(`${blog.title} by ${blog.author} removed`))
-        // showMessage(`${blog.title} by ${blog.author} removed`)
       } catch (error) {
         console.log('failed to remove blog')
       }
@@ -164,7 +158,6 @@ const App = () => {
             key={blog.id}
             blog={blog}
             blogs={blogs}
-            setBlogs={setBlogs}
             user={user}
             handleNewLike={handleNewLike}
             handleBlogRemove={handleBlogRemove}
@@ -177,12 +170,11 @@ const App = () => {
   const logOut = () => {
     try {
       window.localStorage.removeItem('loggedBlogAppUser')
-      setUser(null)
-      // showMessage('logged out successfully')
+      dispatch(setActiveUser(null))
+
       dispatch(newNotification('logged out successfully'))
     } catch (error) {
       dispatch(newErrorMessage('Something went wrong'))
-      // showError('Something went wrong')
     }
   }
   const loggedIn = (user) => (
@@ -197,14 +189,10 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      dispatch(setActiveUser(user))
       blogService.setToken(user.token)
     }
-  }, [])
-
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+  }, [dispatch])
 
   if (user === null) {
     return (
