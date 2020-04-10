@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { newErrorMessage } from './reducers/errorMessageReducer'
 import { newNotification } from './reducers/notificationReducer'
 import { useSelector, useDispatch } from 'react-redux'
-import Blog from './components/Blog'
+
 import blogService from './services/blogs'
 import loginService from './services/login'
 import userService from './services/users'
@@ -23,6 +23,8 @@ import {
   useParams,
 } from 'react-router-dom'
 import { initializeUsers } from './reducers/usersReducer'
+
+import { Table, Form, Button, Navbar, Nav, Alert } from 'react-bootstrap'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -95,9 +97,9 @@ const App = () => {
   }
 
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        Username
+    <Form onSubmit={handleLogin}>
+      <Form.Group>
+        <Form.Label>Username:</Form.Label>
         <input
           id='usernameField'
           type='text'
@@ -105,24 +107,25 @@ const App = () => {
           name='Username'
           onChange={({ target }) => setUsername(target.value)}
         />
-      </div>
-      <div>
-        Password
-        <input
-          id='passwordField'
-          type='password'
-          value={password}
-          name='Password'
-          onChange={({ target }) => setPassword(target.value)}
-          autoComplete='off'
-        />
-      </div>
-      <div>
-        <button id='login-button' type='submit'>
-          Login
-        </button>
-      </div>
-    </form>
+
+        <div>
+          <Form.Label>Username:</Form.Label>
+          <input
+            id='passwordField'
+            type='password'
+            value={password}
+            name='Password'
+            onChange={({ target }) => setPassword(target.value)}
+            autoComplete='off'
+          />
+        </div>
+        <div>
+          <Button variant='primary' id='login-button' type='submit'>
+            Login
+          </Button>
+        </div>
+      </Form.Group>
+    </Form>
   )
 
   const handleNewLike = async (blog) => {
@@ -157,37 +160,40 @@ const App = () => {
     }
   }
 
-  const handleBlogRemove = async (blog) => {
-    if (
-      window.confirm(
-        `Are you sure you want to remove ${blog.title} by ${blog.author}?`
-      )
-    ) {
-      try {
-        await blogService.remove(blog.id)
-        const filteredBlogs = blogs.filter((x) => x.id !== blog.id)
-        dispatch(setAllBlogs(filteredBlogs))
-        dispatch(newNotification(`${blog.title} by ${blog.author} removed`))
-      } catch (error) {
-        console.log('failed to remove blog')
-      }
-    }
-  }
+  // const handleBlogRemove = async (blog) => {
+  //   if (
+  //     window.confirm(
+  //       `Are you sure you want to remove ${blog.title} by ${blog.author}?`
+  //     )
+  //   ) {
+  //     try {
+  //       await blogService.remove(blog.id)
+  //       const filteredBlogs = blogs.filter((x) => x.id !== blog.id)
+  //       dispatch(setAllBlogs(filteredBlogs))
+  //       dispatch(newNotification(`${blog.title} by ${blog.author} removed`))
+  //     } catch (error) {
+  //       console.log('failed to remove blog')
+  //     }
+  //   }
+  // }
 
   const allBlogs = () => {
     const sortedBlogs = blogs.sort((a, b) => (a.likes < b.likes ? 1 : -1))
     return (
       <div className='allBlogs'>
-        {sortedBlogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            blogs={blogs}
-            user={user}
-            handleNewLike={handleNewLike}
-            handleBlogRemove={handleBlogRemove}
-          />
-        ))}
+        <Table striped hover size='sm'>
+          <tbody>
+            {sortedBlogs.map((blog) => (
+              <tr key={blog.id}>
+                <td>
+                  <Link to={`/blogs/${blog.id}`}>
+                    {blog.title} by {blog.author}{' '}
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </div>
     )
   }
@@ -203,11 +209,12 @@ const App = () => {
     }
   }
   const loggedIn = (user) => (
-    <div>
-      {user.name} logged in <button onClick={logOut}>logout</button>
-      <br />
-      <br />
-    </div>
+    <nav>
+      {user.name} logged in{' '}
+      <Button variant='secondary' onClick={logOut}>
+        logout
+      </Button>
+    </nav>
   )
 
   useEffect(() => {
@@ -221,49 +228,58 @@ const App = () => {
 
   if (user === null) {
     return (
-      <div>
-        <ErrorMessage message={errorMessage} />
-        <Notification message={notification} />
+      <div className=' container'>
+        {errorMessage && <Alert variant='danger'>{errorMessage}</Alert>}
+        {notification && <Alert variant='success'>{notification}</Alert>}
+        {/* <ErrorMessage message={errorMessage} /> */}
+        {/* <Notification message={notification} /> */}
         <h2>log in to application</h2>
         {loginForm()}
       </div>
     )
   }
   return (
-    <Router>
-      <div>
-        <Link to='/'>Blogs </Link>
-        <Link to='/users'>Users</Link>
-        {loggedIn(user)}
-      </div>
-      <div>
-        <ErrorMessage message={errorMessage} />
-        <Notification message={notification} />
-        <h2>blogs</h2>
-      </div>
-      <Switch>
-        <Route path='/users/:id'>
-          <ShowSingleUser users={users} />
-        </Route>
-        <Route path='/users'>
-          <ShowUserData users={users} />
-        </Route>
-        <Route path='/blogs/:id'>
-          <ShowSingleBlog
-            blogs={blogs}
-            handleLike={handleNewLike}
-            createNewComment={createNewComment}
-          />
-        </Route>
-        <Route path='/'>
-          <Togglable buttonLabel='New Blog'>
-            <NewBlogField createNewBlog={createNewBLog} />
-          </Togglable>
-          <br></br>
-          <div id='render-blogs'>{allBlogs()}</div>
-        </Route>
-      </Switch>
-    </Router>
+    <div className='container'>
+      <Router>
+        <Navbar expand='lg' bg='dark' variant='dark'>
+          <Nav.Link href='/'>Blogs</Nav.Link>
+          <Nav.Link href='/users'>Users</Nav.Link>
+          <Navbar.Toggle aria-controls='responsive-navbar-nav' />
+          <Navbar.Collapse id='responsive-navbar-nav'>
+            {loggedIn(user)}
+          </Navbar.Collapse>
+        </Navbar>
+        <div>
+          {errorMessage && <Alert variant='danger'>{errorMessage}</Alert>}
+          {notification && <Alert variant='success'>{notification}</Alert>}
+          {/* <ErrorMessage message={errorMessage} />
+        <Notification message={notification} /> */}
+        </div>
+        <Switch>
+          <Route path='/users/:id'>
+            <ShowSingleUser users={users} />
+          </Route>
+          <Route path='/users'>
+            <ShowUserData users={users} />
+          </Route>
+          <Route path='/blogs/:id'>
+            <ShowSingleBlog
+              blogs={blogs}
+              handleLike={handleNewLike}
+              createNewComment={createNewComment}
+            />
+          </Route>
+          <Route path='/'>
+            <h2>Blogs</h2>
+            <Togglable buttonLabel='New Blog'>
+              <NewBlogField createNewBlog={createNewBLog} />
+            </Togglable>
+            <br></br>
+            <div id='render-blogs'>{allBlogs()}</div>
+          </Route>
+        </Switch>
+      </Router>
+    </div>
   )
 }
 const ShowSingleBlog = ({ blogs, handleLike, createNewComment }) => {
@@ -276,14 +292,18 @@ const ShowSingleBlog = ({ blogs, handleLike, createNewComment }) => {
         <h3>by {blog.author}</h3>
         <h3>
           likes: {blog.likes}{' '}
-          <button onClick={() => handleLike(blog)}>like</button>
+          <Button onClick={() => handleLike(blog)}>like</Button>
         </h3>
         <h4>Comments</h4>
-        <ul>
-          {blog.comments.map((x) => (
-            <li key={x.id}>{x.content}</li>
-          ))}
-        </ul>
+        <Table striped>
+          <tbody>
+            {blog.comments.map((x) => (
+              <tr key={x.id}>
+                <td>{x.content}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
         <NewCommentField createNewComment={createNewComment} blog={blog} />
       </div>
     )
@@ -307,14 +327,18 @@ const ShowSingleUser = ({ users }) => {
       <div>
         <h2>{user.name}</h2>
         <h3>Added blogs</h3>
-        <ul>
+        <Table striped>
+          <tbody>
           {user.blogs.map((x) => (
-            <li key={x.id}>
-              <Link to={`/blogs/${x.id}`}>{x.title}</Link> by {x.author} likes:{' '}
-              {x.likes}
-            </li>
+            <tr key={x.id}>
+              <td>
+                <Link to={`/blogs/${x.id}`}>{x.title}</Link> by {x.author}{' '}
+                likes: {x.likes}
+              </td>
+            </tr>
           ))}
-        </ul>
+          </tbody>
+        </Table>
       </div>
     )
   }
@@ -326,17 +350,20 @@ const ShowUserData = ({ users }) => {
     return (
       <div>
         <h2>Users</h2>
-        <ul>
-          {console.log(users)}
-          {users.map((x) => (
-            <li key={x.id}>
-              <strong>
-                <Link to={`/users/${x.id}`}>{x.name}</Link>
-              </strong>{' '}
-              blogs created: {x.blogs.length}
-            </li>
-          ))}
-        </ul>
+        <Table>
+          <tbody>
+            {users.map((x) => (
+              <tr key={x.id}>
+                <td>
+                  <strong>
+                    <Link to={`/users/${x.id}`}>{x.name}</Link>
+                  </strong>{' '}
+                  blogs created: {x.blogs.length}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </div>
     )
   }
@@ -392,13 +419,13 @@ const Togglable = (props) => {
   return (
     <div>
       <div style={hideWhenVisible}>
-        <button id='open' onClick={toggleVisibility}>
+        <Button id='open' onClick={toggleVisibility}>
           {props.buttonLabel}
-        </button>
+        </Button>
       </div>
       <div style={showWhenVisible}>
         {props.children}
-        <button onClick={toggleVisibility}>Hide Form</button>
+        <Button onClick={toggleVisibility}>Hide Form</Button>
       </div>
     </div>
   )

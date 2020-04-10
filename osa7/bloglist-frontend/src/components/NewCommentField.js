@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-
+import { Button } from 'react-bootstrap'
 const NewCommentField = ({ blog, createNewComment }) => {
   const [comment, setComment] = useState('')
 
@@ -19,7 +19,7 @@ const NewCommentField = ({ blog, createNewComment }) => {
           onChange={({ target }) => setComment(target.value)}
         ></input>
 
-        <button>Add Comment</button>
+        <Button type='submit'>Add Comment</Button>
       </form>
     </div>
   )
