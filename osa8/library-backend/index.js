@@ -50,6 +50,7 @@ const typeDefs = gql`
     id: ID
     born: Int
     bookCount: Int
+    books: [Book!]
   }
 
   type Query {
@@ -84,7 +85,7 @@ const resolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
-    allAuthors: () => Author.find({}),
+    allAuthors: () => Author.find({}).populate('books'),
     allBooks: async (root, args) => {
       if (!args.author && !args.genre) {
         return Book.find({}).populate('author')
@@ -148,6 +149,7 @@ const resolvers = {
       const author = await Author.findOne({ name: args.author })
       if (!author) {
         const newAuthor = new Author({ name: args.author })
+        newAuthor.books = newAuthor.books.concat(book)
 
         try {
           await newAuthor.save()
@@ -168,6 +170,8 @@ const resolvers = {
         return book
       } else {
         book.author = author
+        author.books = author.books.concat(book)
+        await author.save()
       }
       await book.save().catch((error) => {
         throw new UserInputError(error.message, {
@@ -198,14 +202,7 @@ const resolvers = {
     },
   },
   Author: {
-    bookCount: async (root) => {
-      const author = await Author.findOne({ name: root.name })
-      const id = author.id
-
-      const books = await Book.find({ author: id })
-
-      return books.length
-    },
+    bookCount: (root) => root.books.length,
   },
 
   Subscription: {

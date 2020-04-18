@@ -5,17 +5,23 @@ import { useQuery } from '@apollo/client'
 const Books = (props) => {
   const [filter, setFilter] = useState('')
   const [genres, setGenres] = useState([])
+  const [favGenre, setFavGenre] = useState(null)
 
-  const favourite = useQuery(FAVOURITE_GENRE)
+  const favourite = useQuery(FAVOURITE_GENRE, {
+    pollInterval: 2000,
+  })
 
   useEffect(() => {
     if (favourite.data && props.recommend) {
-      setFilter(favourite.data.me.favoriteGenre)
+      setFavGenre(favourite)
+      if (favGenre && favGenre.data.me !== null) {
+        setFilter(favGenre.data.me.favoriteGenre)
+      }
     }
     if (!props.recommend) {
       setFilter('')
     }
-  }, [favourite, props.recommend])
+  }, [favourite, props.recommend, favGenre])
 
   const result = useQuery(ALL_BOOKS, {
     variables: { genre: filter },
