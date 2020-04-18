@@ -1,4 +1,6 @@
 require('dotenv').config()
+const { PubSub } = require('apollo-server')
+const pubsub = new PubSub()
 const {
   ApolloServer,
   gql,
@@ -71,6 +73,10 @@ const typeDefs = gql`
     login(username: String!, password: String!): Token
 
     editAuthor(name: String!, setBornTo: Int!): Author
+  }
+
+  type Subscription {
+    bookAdded: Book!
   }
 `
 
@@ -153,19 +159,24 @@ const resolvers = {
 
         book.author = newAuthor
 
-        return await book.save().catch((error) => {
+        await book.save().catch((error) => {
           throw new UserInputError(error.message, {
             invalidArgs: args,
           })
         })
+        pubsub.publish('BOOK_ADDED', { bookAdded: book })
+        return book
       } else {
         book.author = author
       }
-      return await book.save().catch((error) => {
+      await book.save().catch((error) => {
         throw new UserInputError(error.message, {
           invalidArgs: args,
         })
       })
+
+      pubsub.publish('BOOK_ADDED', { bookAdded: book })
+      return book
     },
     editAuthor: async (root, args, context) => {
       const currentUser = context.currentUser
@@ -196,6 +207,12 @@ const resolvers = {
       return books.length
     },
   },
+
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(['BOOK_ADDED']),
+    },
+  },
 }
 
 const server = new ApolloServer({
@@ -212,6 +229,7 @@ const server = new ApolloServer({
   },
 })
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`Server ready at ${url}`)
+  console.log(`Subscriptions ready at ${subscriptionsUrl}`)
 })
