@@ -13,14 +13,16 @@ const SetBirthyear = (props) => {
     setBirthyear({ variables: { name, year } })
     console.log(name, year)
   }
-
+  if (!props.token) {
+    return null
+  }
   return (
     <div>
       <h2>Set Birthyear</h2>
       <form onSubmit={submit}>
         <div>
           name
-          <select  value={name} onChange={({ target }) => setName(target.value)}>
+          <select value={name} onChange={({ target }) => setName(target.value)}>
             {props.authors.map((a) => (
               <option key={a.name} value={a.name}>
                 {a.name}

@@ -10,7 +10,6 @@ const Books = (props) => {
 
   useEffect(() => {
     if (favourite.data && props.recommend) {
-      console.log(favourite.data.me.favoriteGenre)
       setFilter(favourite.data.me.favoriteGenre)
     }
     if (!props.recommend) {
