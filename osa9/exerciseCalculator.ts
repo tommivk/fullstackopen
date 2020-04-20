@@ -1,32 +1,32 @@
 
 interface Result {
-    periodLength: number,
-    trainingDays: number,
-    success: boolean,
-    rating: number,
-    ratingDescription: string,
-    target: number,
+    periodLength: number;
+    trainingDays: number;
+    success: boolean;
+    rating: number;
+    ratingDescription: string;
+    target: number;
     average: number;
-};
+}
 
-const calculateExercises = (hours: Array<number>, targetValue: number) => {
-    let days = hours.length;
-    let trainingDays = hours.filter((x) => x !== 0).length;
-    let avgTime = hours.reduce((a, b) => a + b, 0) / days;
-    let success = avgTime >= targetValue ? true : false;
-    let targetHit = hours.filter((x) => x >= targetValue).length;
-    let rating;
-    let ratingDescription;
+export const calculateExercises = (hours: Array<number>, targetValue: number) => {
+    const days = hours.length;
+    const trainingDays = hours.filter((x) => x !== 0).length;
+    const avgTime = hours.reduce((a, b) => a + b, 0) / days;
+    const success = avgTime >= targetValue ? true : false;
+    const targetHit = hours.filter((x) => x >= targetValue).length;
+    let rating = 0;
+    let ratingDescription = '';
 
     if (targetHit / days > 0.5) {
         rating = 2;
-    };
+    }
     if (targetHit / days > 0.8) {
         rating = 3;
-    };
+    }
     if (targetHit / days <= 0.5) {
         rating = 1;
-    };
+    }
 
     switch (rating) {
         case 1:
@@ -40,7 +40,7 @@ const calculateExercises = (hours: Array<number>, targetValue: number) => {
             break;
     }
 
-    let result: Result = {
+    const result: Result = {
         periodLength: days,
         trainingDays,
         success,
@@ -60,10 +60,10 @@ interface Hours {
 const parseArguments = (args: Array<string>): Hours => {
 
     if (args.length < 4) throw new Error('Not enough arguments');
-    const arguments = args.slice(3);
+    const arg = args.slice(3);
     const target = Number(args[2]);
-    let hours: Array<number> = [];
-    arguments.map((x) => {
+    const hours: Array<number> = [];
+    arg.map((x) => {
         if (isNaN(Number(x)) || isNaN(Number(target))) {
             throw new Error('Provided values must be numbers');
         }
