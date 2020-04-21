@@ -1,5 +1,5 @@
 import patients = require('../../data/patients.json');
-import { Patient, ExcludeSsn, newPatientEntry } from '../types';
+import { Patient, ExcludeSsn, newPatientEntry, PublicPatient } from '../types';
 
 
 const getPatientsWithoutSsn = (): ExcludeSsn[] => {
@@ -10,6 +10,11 @@ const getPatientsWithoutSsn = (): ExcludeSsn[] => {
         gender,
         occupation,
     }));
+};
+
+const getById = (id: string): PublicPatient | undefined => {
+
+    return patients.find((p) => p.id === id);
 };
 
 const generateId = (): string => {
@@ -31,4 +36,4 @@ const addEntry = (entry: newPatientEntry): Patient => {
 
 
 
-export default { getPatientsWithoutSsn, addEntry };
+export default { getPatientsWithoutSsn, addEntry, getById };
