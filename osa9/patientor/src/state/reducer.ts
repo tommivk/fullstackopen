@@ -37,9 +37,10 @@ export const reducer = (state: State, action: Action): State => {
         }
       };
     case "UPDATE_PATIENT":
-      const patient = state.patients[action.payload.id];
-      console.log(patient);
+
+      // const patient = state.patients[action.payload.id];
       console.log(action.payload);
+
       return {
         ...state,
         patients: {
@@ -51,4 +52,25 @@ export const reducer = (state: State, action: Action): State => {
     default:
       return state;
   }
+};
+
+export const addPatient = (payload: Patient) => {
+  return {
+    type: "ADD_PATIENT" as const,
+    payload: payload
+  };
+};
+
+export const setPatientList = (payload: Patient[]) => {
+  return {
+    type: "SET_PATIENT_LIST" as const,
+    payload: payload
+  };
+};
+
+export const updatePatient = (payload: Patient) => {
+  return {
+    type: "UPDATE_PATIENT" as const,
+    payload: payload,
+  };
 };

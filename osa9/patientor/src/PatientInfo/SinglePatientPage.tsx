@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useStateValue } from '../state/state';
 import axios from 'axios';
 import { Patient } from '../types';
+import { updatePatient } from '../state/reducer';
 
 const SinglePatientPage = () => {
   const [{ patients }, dispatch] = useStateValue();
@@ -19,7 +20,8 @@ const SinglePatientPage = () => {
         const { data: fetchedPatient } = await axios.get<Patient>(
           `http://localhost:3001/api/patients/${id}`
         );
-        dispatch({ type: 'UPDATE_PATIENT', payload: fetchedPatient });
+        // dispatch({ type: 'UPDATE_PATIENT', payload: fetchedPatient });
+        dispatch(updatePatient(fetchedPatient));
       } catch (e) {
         console.error(e);
       }
@@ -27,7 +29,7 @@ const SinglePatientPage = () => {
     if (patient === undefined || patient.ssn === undefined) {
       fetchPatient();
     }
-  }, [dispatch]);
+  }, [dispatch, id, patient]);
   console.log(patient);
   if (patient) {
     return (
