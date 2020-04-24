@@ -2,14 +2,29 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useStateValue } from '../state/state';
 import axios from 'axios';
-import { Patient } from '../types';
-import { updatePatient } from '../state/reducer';
+import { Patient, Entry, EntryFormValues } from '../types';
+import { updatePatient, addEntry } from '../state/reducer';
+import ShowEntries from './ShowEntries';
+import EntryForm from './EntryForm';
 
 const SinglePatientPage = () => {
   const [{ patients }, dispatch] = useStateValue();
   const { id } = useParams<{ id: string }>();
 
   const patient = patients[id];
+
+  const submitNewEntry = async (values: EntryFormValues) => {
+    console.log(values);
+    try {
+      const { data: newEntry } = await axios.post<Entry>(
+        `http://localhost:3001/api/patients/${id}/entries`,
+        values
+      );
+      dispatch(addEntry(id, newEntry));
+    } catch (e) {
+      console.error(e.response.data);
+    }
+  };
 
   React.useEffect(() => {
     axios.get<void>(`http://localhost:3001/api/patients/${id}`);
@@ -20,7 +35,7 @@ const SinglePatientPage = () => {
         const { data: fetchedPatient } = await axios.get<Patient>(
           `http://localhost:3001/api/patients/${id}`
         );
-        // dispatch({ type: 'UPDATE_PATIENT', payload: fetchedPatient });
+
         dispatch(updatePatient(fetchedPatient));
       } catch (e) {
         console.error(e);
@@ -30,7 +45,7 @@ const SinglePatientPage = () => {
       fetchPatient();
     }
   }, [dispatch, id, patient]);
-  console.log(patient);
+
   if (patient) {
     return (
       <div>
@@ -51,6 +66,14 @@ const SinglePatientPage = () => {
         <div>
           <strong>SSN: {patient.ssn} </strong>
         </div>
+
+        <div>
+          <br></br>
+          <h3>Entries</h3>
+          {patient.entries &&
+            patient.entries.map((x) => <ShowEntries key={x.id} entry={x} />)}
+        </div>
+        <EntryForm onSubmit={submitNewEntry} />
       </div>
     );
   }

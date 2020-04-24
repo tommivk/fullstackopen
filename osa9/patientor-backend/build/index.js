@@ -14,7 +14,7 @@ const PORT = 3001;
 app.get('/api/ping', (_req, res) => {
     res.send('pong');
 });
-app.use('/api/diagnoses', diagnoseRouter_1.default);
+app.use('/api/diagnosis', diagnoseRouter_1.default);
 app.use('/api/patients', patientRouter_1.default);
 app.listen(PORT, () => {
     console.log(`server running on port ${PORT}`);

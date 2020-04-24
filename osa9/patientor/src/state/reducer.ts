@@ -1,5 +1,5 @@
 import { State } from "./state";
-import { Patient } from "../types";
+import { Patient, Diagnosis, Entry } from "../types";
 
 export type Action =
   | {
@@ -11,8 +11,19 @@ export type Action =
     payload: Patient;
   }
   | {
-    type: "UPDATE_PATIENT";      ///////
+    type: "UPDATE_PATIENT";
     payload: Patient;
+  }
+  |
+  {
+    type: "SET_DIAGNOSES";
+    payload: Diagnosis[];
+  }
+  |
+  {
+    type: "ADD_ENTRY";
+    payload: Entry;
+    id: string;
   };
 
 export const reducer = (state: State, action: Action): State => {
@@ -38,7 +49,6 @@ export const reducer = (state: State, action: Action): State => {
       };
     case "UPDATE_PATIENT":
 
-      // const patient = state.patients[action.payload.id];
       console.log(action.payload);
 
       return {
@@ -48,7 +58,28 @@ export const reducer = (state: State, action: Action): State => {
           [action.payload.id]: action.payload
         }
       };
+    case "SET_DIAGNOSES":
+      return {
+        ...state,
+        diagnoses: {
+          ...action.payload.reduce(
+            (memo, diagnose) => ({ ...memo, [diagnose.code]: diagnose }),
+            {}
+          ),
+          ...state.diagnoses
+        }
 
+      };
+    case "ADD_ENTRY":
+      const patient = state.patients[action.id];
+      patient.entries.push(action.payload);
+      return {
+        ...state,
+        patients: {
+          ...state.patients,
+          [action.id]: patient
+        }
+      };
     default:
       return state;
   }
@@ -58,6 +89,14 @@ export const addPatient = (payload: Patient) => {
   return {
     type: "ADD_PATIENT" as const,
     payload: payload
+  };
+};
+
+export const addEntry = (id: string, payload: Entry) => {
+  return {
+    type: "ADD_ENTRY" as const,
+    payload: payload,
+    id: id,
   };
 };
 
@@ -72,5 +111,12 @@ export const updatePatient = (payload: Patient) => {
   return {
     type: "UPDATE_PATIENT" as const,
     payload: payload,
+  };
+};
+
+export const setDiagnoses = (payload: Diagnosis[]) => {
+  return {
+    type: "SET_DIAGNOSES" as const,
+    payload: payload
   };
 };
